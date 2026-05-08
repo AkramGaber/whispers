@@ -18,6 +18,14 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -31,5 +39,4 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-await connectDB();
 app.listen(PORT, () => console.log(`whisper listening on ${PORT}`));
